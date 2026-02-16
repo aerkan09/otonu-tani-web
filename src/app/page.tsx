@@ -6,7 +6,7 @@ import { Zap, Phone, PlayCircle, ShieldCheck, Car, CheckCircle2 } from "lucide-r
 const SERKAN_NO = "0507 451 66 25";
 const TOPLAM_VIDEO = 10;
 const TOPLAM_RESIM = 50;
-const RESIM_SURESI = 15000; // Maddeler uzun olduğu için süreyi biraz artırdım
+const RESIM_SURESI = 15000; 
 
 const HIZMETLER = [
   "Araç Dosya Sorgulama",
@@ -31,7 +31,7 @@ const MESAJLAR = [
   "Serkan Altay güvencesiyle, aracınızın kimliğini dijital sistemlerle eksiksiz raporluyoruz."
 ];
 
-export default function KurumsalOtonuTani() {
+export default function KurumsalOtonuTaniFinal() {
   const [mode, setMode] = useState<"video" | "resim">("video");
   const [vIndex, setVIndex] = useState(1);
   const [rIndex, setRIndex] = useState(1);
@@ -49,7 +49,7 @@ export default function KurumsalOtonuTani() {
       const lady = voices.find(v => v.lang.includes("tr") && (v.name.includes("Seda") || v.name.includes("Emel"))) || voices.find(v => v.lang.includes("tr"));
       if (lady) utterance.voice = lady;
       utterance.lang = "tr-TR";
-      utterance.rate = 0.88;
+      utterance.rate = 0.85;
       utterance.pitch = 1.1;
       window.speechSynthesis.speak(utterance);
     }
@@ -102,11 +102,11 @@ export default function KurumsalOtonuTani() {
       {!isStarted && (
         <div onClick={handleStart} style={{ position: 'absolute', inset: 0, zIndex: 1000, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', background: '#000', cursor: 'pointer' }}>
           <PlayCircle size={100} color="#FFD60A" />
-          <h1 style={{ color: '#FFD60A', marginTop: '20px', letterSpacing: '2px' }}>YAYINI BAŞLAT</h1>
+          <h1 style={{ color: '#FFD60A', marginTop: '20px', letterSpacing: '2px' }}>OTONU TANI YAYININI BAŞLAT</h1>
         </div>
       )}
 
-      {/* ANA EKRAN */}
+      {/* ANA EKRAN (VİDEO VE RESİM) */}
       <div style={{ position: 'absolute', inset: 0 }}>
         {mode === "video" ? (
           <video
@@ -117,18 +117,24 @@ export default function KurumsalOtonuTani() {
             playsInline
             onEnded={() => vIndex < TOPLAM_VIDEO ? setVIndex(vIndex + 1) : (setMode("resim"), setVIndex(1))}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            onError={() => vIndex < TOPLAM_VIDEO ? setVIndex(vIndex + 1) : (setMode("resim"), setVIndex(1))}
           />
         ) : (
           <div style={{ width: '100%', height: '100%', position: 'relative' }}>
             <img
               key={`r-${rIndex}`}
               src={`/images/slayt1 (${rIndex}).jpg`}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', animation: 'kenburns 20s infinite' }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               alt="Ekspertiz"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                if (!target.src.includes('.jpeg')) {
+                    target.src = `/images/slayt1 (${rIndex}).jpeg`;
+                }
+              }}
             />
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 50%)' }} />
             
-            {/* RESİM ÜZERİNDEKİ MESAJ KUTUSU */}
             <div style={{ position: 'absolute', bottom: '180px', left: '50px', right: '50px', zIndex: 20 }}>
                <div style={{ background: 'rgba(255, 214, 10, 0.9)', color: '#000', padding: '20px 40px', borderRadius: '0 50px 50px 0', display: 'inline-block', boxShadow: '10px 10px 30px rgba(0,0,0,0.5)' }}>
                   <h2 style={{ fontSize: '3.5vw', fontWeight: '900', margin: 0, textTransform: 'uppercase' }}>
@@ -142,7 +148,7 @@ export default function KurumsalOtonuTani() {
 
       {/* ÜST TABELA */}
       <div style={{ position: 'absolute', top: '30px', left: '30px', zIndex: 100, display: 'flex', gap: '15px' }}>
-         <div style={{ background: '#FFD60A', color: '#000', padding: '15px 30px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '15px', border: '3px solid #fff', boxShadow: '0 0 20px rgba(255,214,10,0.4)' }}>
+         <div style={{ background: '#FFD60A', color: '#000', padding: '15px 30px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '15px', border: '3px solid #fff' }}>
             <Car size={40} />
             <div style={{ fontWeight: '900', fontSize: '2vw' }}>OTONU TANI</div>
          </div>
@@ -151,24 +157,18 @@ export default function KurumsalOtonuTani() {
          </div>
       </div>
 
-      {/* KAYAN YAZI BANDI (TICKER) */}
-      <div style={{ position: 'absolute', bottom: '100px', width: '100%', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(5px)', height: '50px', overflow: 'hidden', display: 'flex', alignItems: 'center', borderTop: '1px solid rgba(255,214,10,0.3)', zIndex: 90 }}>
-         <div className="ticker-content" style={{ display: 'flex', whiteSpace: 'nowrap', gap: '50px', animation: 'ticker 40s linear infinite', color: '#FFD60A', fontSize: '1.2vw', fontWeight: 'bold' }}>
+      {/* KAYAN YAZI BANDI */}
+      <div style={{ position: 'absolute', bottom: '100px', width: '100%', background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(5px)', height: '50px', overflow: 'hidden', display: 'flex', alignItems: 'center', borderTop: '2px solid #FFD60A', zIndex: 90 }}>
+         <marquee scrollamount="10" style={{ color: '#FFD60A', fontSize: '1.5vw', fontWeight: 'bold' }}>
             {HIZMETLER.map((h, i) => (
-              <span key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <CheckCircle2 size={20} /> {h.toUpperCase()}
+              <span key={i} style={{ marginRight: '50px' }}>
+                • {h.toUpperCase()}
               </span>
             ))}
-            {/* Döngü için aynısından bir tane daha */}
-            {HIZMETLER.map((h, i) => (
-              <span key={`dup-${i}`} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <CheckCircle2 size={20} /> {h.toUpperCase()}
-              </span>
-            ))}
-         </div>
+         </marquee>
       </div>
 
-      {/* EN ALT NUMARA BANDI */}
+      {/* ALT NUMARA BANDI */}
       <div style={{ position: 'absolute', bottom: 0, width: '100%', height: '100px', background: '#FFD60A', color: '#000', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 50px', zIndex: 100, borderTop: '5px solid #fff' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           <ShieldCheck size={50} />
@@ -179,17 +179,6 @@ export default function KurumsalOtonuTani() {
           <div style={{ fontSize: '5vw', fontWeight: '1000' }}>{SERKAN_NO}</div>
         </div>
       </div>
-
-      <style jsx global>{`
-        @keyframes ticker {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        @keyframes kenburns {
-          0% { transform: scale(1); }
-          100% { transform: scale(1.2) translate(10px, -10px); }
-        }
-      `}</style>
     </div>
   );
 }
