@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Zap, Phone, PlayCircle, ShieldCheck, Car, CheckCircle2 } from "lucide-react";
+import { Phone, PlayCircle, ShieldCheck, Car, MapPin } from "lucide-react";
 
 const SERKAN_NO = "0507 451 66 25";
+const ADRES = "İstiklal Mah. Şehit Asteğmen Süleyman Çamlıca Bulvarı No: 183";
 const TOPLAM_VIDEO = 10;
 const TOPLAM_RESIM = 50;
 const RESIM_SURESI = 15000; 
@@ -31,9 +32,9 @@ const MESAJLAR = [
   "Serkan Altay güvencesiyle, aracınızın kimliğini dijital sistemlerle eksiksiz raporluyoruz."
 ];
 
-export default function OtonuTaniJpgFinal() {
+export default function OtonuTaniTamSurum() {
   const [mode, setMode] = useState<"video" | "resim">("video");
-  const [vIndex, setVIndex] = useState(1);
+  const [vIndex, setVIndex] = useState(0); // 0 = tanitim.mp4, 1-10 = digerleri
   const [rIndex, setRIndex] = useState(1);
   const [mounted, setMounted] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
@@ -88,11 +89,22 @@ export default function OtonuTaniJpgFinal() {
       speak(MESAJLAR[rIndex % MESAJLAR.length]);
       const timer = setTimeout(() => {
         if (rIndex < TOPLAM_RESIM) setRIndex(prev => prev + 1);
-        else { setMode("video"); setRIndex(1); }
+        else { setMode("video"); setRIndex(1); setVIndex(0); }
       }, RESIM_SURESI);
       return () => { clearTimeout(timer); window.speechSynthesis.cancel(); };
     }
   }, [mode, rIndex, speak, mounted, isStarted]);
+
+  const handleVideoEnd = () => {
+    if (vIndex === 0) {
+      setVIndex(1); // tanitim.mp4 bitti, tanitim1.mp4'e gec
+    } else if (vIndex < TOPLAM_VIDEO) {
+      setVIndex(vIndex + 1);
+    } else {
+      setMode("resim");
+      setVIndex(0);
+    }
+  };
 
   if (!mounted) return null;
 
@@ -102,22 +114,21 @@ export default function OtonuTaniJpgFinal() {
       {!isStarted && (
         <div onClick={handleStart} style={{ position: 'absolute', inset: 0, zIndex: 1000, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', background: '#000', cursor: 'pointer' }}>
           <PlayCircle size={100} color="#FFD60A" />
-          <h1 style={{ color: '#FFD60A', marginTop: '20px', letterSpacing: '2px', textAlign: 'center' }}>OTONU TANI YAYININI BAŞLAT</h1>
+          <h1 style={{ color: '#FFD60A', marginTop: '20px', letterSpacing: '2px', textAlign: 'center' }}>YAYINI BAŞLAT</h1>
         </div>
       )}
 
-      {/* ANA EKRAN */}
       <div style={{ position: 'absolute', inset: 0 }}>
         {mode === "video" ? (
           <video
             key={`v-${vIndex}`}
             ref={videoRef}
-            src={`/tanitim${vIndex}.mp4`}
+            src={vIndex === 0 ? "/tanitim.mp4" : `/tanitim${vIndex}.mp4`}
             autoPlay
             playsInline
-            onEnded={() => vIndex < TOPLAM_VIDEO ? setVIndex(vIndex + 1) : (setMode("resim"), setVIndex(1))}
+            onEnded={handleVideoEnd}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            onError={() => vIndex < TOPLAM_VIDEO ? setVIndex(vIndex + 1) : (setMode("resim"), setVIndex(1))}
+            onError={handleVideoEnd}
           />
         ) : (
           <div style={{ width: '100%', height: '100%', position: 'relative' }}>
@@ -129,9 +140,9 @@ export default function OtonuTaniJpgFinal() {
             />
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 50%)' }} />
             
-            <div style={{ position: 'absolute', bottom: '180px', left: '50px', right: '50px', zIndex: 20 }}>
+            <div style={{ position: 'absolute', bottom: '220px', left: '50px', right: '50px', zIndex: 20 }}>
                <div style={{ background: 'rgba(255, 214, 10, 0.95)', color: '#000', padding: '20px 40px', borderRadius: '0 50px 50px 0', display: 'inline-block', boxShadow: '10px 10px 30px rgba(0,0,0,0.5)' }}>
-                  <h2 style={{ fontSize: '3.5vw', fontWeight: '900', margin: 0, textTransform: 'uppercase' }}>
+                  <h2 style={{ fontSize: '3vw', fontWeight: '900', margin: 0, textTransform: 'uppercase' }}>
                     {MESAJLAR[rIndex % MESAJLAR.length]}
                   </h2>
                </div>
@@ -140,18 +151,13 @@ export default function OtonuTaniJpgFinal() {
         )}
       </div>
 
-      {/* ÜST TABELA */}
-      <div style={{ position: 'absolute', top: '30px', left: '30px', zIndex: 100, display: 'flex', gap: '15px' }}>
-         <div style={{ background: '#FFD60A', color: '#000', padding: '15px 30px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '15px', border: '3px solid #fff' }}>
-            <Car size={40} />
-            <div style={{ fontWeight: '900', fontSize: '2vw' }}>OTONU TANI</div>
-         </div>
-         <div style={{ background: 'rgba(0,0,0,0.7)', padding: '15px 30px', borderRadius: '10px', border: '2px solid #FFD60A', backdropFilter: 'blur(10px)' }}>
-            <div style={{ color: '#FFD60A', fontSize: '1.8vw', fontWeight: 'bold' }}>SERKAN ALTAY</div>
-         </div>
+      <div style={{ position: 'absolute', bottom: '155px', width: '100%', padding: '10px 50px', display: 'flex', alignItems: 'center', gap: '15px', zIndex: 110 }}>
+          <div style={{ background: 'rgba(0,0,0,0.8)', padding: '10px 25px', borderRadius: '50px', border: '2px solid #FFD60A', display: 'flex', alignItems: 'center', gap: '15px' }}>
+             <MapPin size={25} color="#FFD60A" />
+             <span style={{ color: '#fff', fontSize: '1.4vw', fontWeight: 'bold' }}>{ADRES.toUpperCase()}</span>
+          </div>
       </div>
 
-      {/* KAYAN YAZI BANDI */}
       <div style={{ position: 'absolute', bottom: '100px', width: '100%', background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(5px)', height: '55px', overflow: 'hidden', display: 'flex', alignItems: 'center', borderTop: '2px solid #FFD60A', zIndex: 90 }}>
          {/* eslint-disable-next-line react/no-unknown-property */}
          <marquee scrollamount="12" style={{ color: '#FFD60A', fontSize: '1.8vw', fontWeight: 'bold' }}>
@@ -160,10 +166,10 @@ export default function OtonuTaniJpgFinal() {
                 • {h.toUpperCase()}
               </span>
             ))}
+            <span style={{ marginRight: '60px', color: '#fff' }}> • ADRES: {ADRES.toUpperCase()}</span>
          </marquee>
       </div>
 
-      {/* ALT NUMARA BANDI */}
       <div style={{ position: 'absolute', bottom: 0, width: '100%', height: '100px', background: '#FFD60A', color: '#000', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 50px', zIndex: 100, borderTop: '5px solid #fff' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           <ShieldCheck size={50} />
