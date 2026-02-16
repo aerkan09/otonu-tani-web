@@ -1,22 +1,37 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Zap, Phone, PlayCircle } from "lucide-react";
+import { Zap, Phone, PlayCircle, ShieldCheck, Car, CheckCircle2 } from "lucide-react";
 
 const SERKAN_NO = "0507 451 66 25";
 const TOPLAM_VIDEO = 10;
 const TOPLAM_RESIM = 50;
-const RESIM_SURESI = 12000;
+const RESIM_SURESI = 15000; // Maddeler uzun olduğu için süreyi biraz artırdım
 
-const MESAJLAR = [
-  "Otonu Tanı teknoloji merkezine hoş geldiniz. Ekspertizi şansa değil, bize bırakın.",
-  "Neden Otonu Tanı? Çünkü yüzde yüz objektif raporlama ve garantili ekspertiz sunuyoruz.",
-  "Dört çarpı dört uzmanlığımızla, her arazi aracını milimetrik hassasiyetle inceliyoruz.",
-  "Dyno test ve performans ölçümü ile motorun beygir gücünü ve tork değerlerini raporluyoruz.",
-  "Serkan Altay güvencesiyle İncirliova'da aracınızın kimliğini dijital sistemlerle çıkarıyoruz."
+const HIZMETLER = [
+  "Araç Dosya Sorgulama",
+  "Kaporta Boya Ekspertizi",
+  "Alt - Ön - Mekanik Ekspertiz",
+  "Motor Ekspertizi",
+  "Ön Muayene Hizmeti",
+  "Dış Kondisyon Ekspertizi",
+  "İç Kondisyon Ekspertizi",
+  "Yanal Kayma Testi",
+  "Fren Testleri",
+  "Süspansiyon Testleri",
+  "Dyno Test (Motor Performans)",
+  "Elektronik Kontroller"
 ];
 
-export default function OtonuTaniFinal() {
+const MESAJLAR = [
+  "Otonu Tanı teknoloji merkezine hoş geldiniz. Neden Serkan Altay Otonu Tanı? Çünkü işi uzmanına bırakıyoruz.",
+  "Kaliteli, güvenilir ve tarafsız oto ekspertiz hizmeti ile her zaman sizlerin yanındayız.",
+  "Ekspertizi şansa değil, bize bırakın. İşte sunduğumuz profesyonel çözümler:",
+  ...HIZMETLER.map(h => `Hizmetlerimiz arasında ${h} titizlikle yapılmaktadır.`),
+  "Serkan Altay güvencesiyle, aracınızın kimliğini dijital sistemlerle eksiksiz raporluyoruz."
+];
+
+export default function KurumsalOtonuTani() {
   const [mode, setMode] = useState<"video" | "resim">("video");
   const [vIndex, setVIndex] = useState(1);
   const [rIndex, setRIndex] = useState(1);
@@ -34,8 +49,8 @@ export default function OtonuTaniFinal() {
       const lady = voices.find(v => v.lang.includes("tr") && (v.name.includes("Seda") || v.name.includes("Emel"))) || voices.find(v => v.lang.includes("tr"));
       if (lady) utterance.voice = lady;
       utterance.lang = "tr-TR";
-      utterance.rate = 0.85;
-      utterance.pitch = 1.2;
+      utterance.rate = 0.88;
+      utterance.pitch = 1.1;
       window.speechSynthesis.speak(utterance);
     }
   }, []);
@@ -44,8 +59,7 @@ export default function OtonuTaniFinal() {
     setMounted(true);
     musicRef.current = new Audio("/muzik.mp3");
     musicRef.current.loop = true;
-    musicRef.current.volume = 0.15;
-    window.speechSynthesis.getVoices();
+    musicRef.current.volume = 0.12;
   }, []);
 
   const handleStart = () => {
@@ -54,9 +68,6 @@ export default function OtonuTaniFinal() {
     if (videoRef.current) {
       videoRef.current.muted = false;
       videoRef.current.play().catch(() => {});
-    }
-    if (mode === "resim") {
-      speak(MESAJLAR[rIndex % MESAJLAR.length]);
     }
   };
 
@@ -76,46 +87,26 @@ export default function OtonuTaniFinal() {
     } else {
       speak(MESAJLAR[rIndex % MESAJLAR.length]);
       const timer = setTimeout(() => {
-        if (rIndex < TOPLAM_RESIM) {
-          setRIndex(prev => prev + 1);
-        } else {
-          setMode("video");
-          setRIndex(1);
-        }
+        if (rIndex < TOPLAM_RESIM) setRIndex(prev => prev + 1);
+        else { setMode("video"); setRIndex(1); }
       }, RESIM_SURESI);
-      return () => {
-        clearTimeout(timer);
-        window.speechSynthesis.cancel();
-      };
+      return () => { clearTimeout(timer); window.speechSynthesis.cancel(); };
     }
   }, [mode, rIndex, speak, mounted, isStarted]);
-
-  const handleVideoEnd = () => {
-    if (vIndex < TOPLAM_VIDEO) {
-      setVIndex(vIndex + 1);
-    } else {
-      setMode("resim");
-      setVIndex(1);
-    }
-  };
 
   if (!mounted) return null;
 
   return (
-    <div style={{ backgroundColor: '#000', color: '#fff', height: '100vh', width: '100vw', overflow: 'hidden', position: 'relative' }}>
+    <div style={{ backgroundColor: '#000', color: '#fff', height: '100vh', width: '100vw', overflow: 'hidden', position: 'relative', fontFamily: 'sans-serif' }}>
       
       {!isStarted && (
-        <div 
-          onClick={handleStart}
-          style={{ position: 'absolute', inset: 0, zIndex: 1000, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', background: 'rgba(0,0,0,0.95)', cursor: 'pointer' }}
-        >
-          <div style={{ border: '4px solid #FFD60A', padding: '40px', borderRadius: '50%', marginBottom: '20px' }}>
-            <PlayCircle size={80} color="#FFD60A" />
-          </div>
-          <h2 style={{ color: '#FFD60A', textAlign: 'center', fontSize: '24px' }}>OTONU TANI YAYININI BAŞLAT</h2>
+        <div onClick={handleStart} style={{ position: 'absolute', inset: 0, zIndex: 1000, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', background: '#000', cursor: 'pointer' }}>
+          <PlayCircle size={100} color="#FFD60A" />
+          <h1 style={{ color: '#FFD60A', marginTop: '20px', letterSpacing: '2px' }}>YAYINI BAŞLAT</h1>
         </div>
       )}
 
+      {/* ANA EKRAN */}
       <div style={{ position: 'absolute', inset: 0 }}>
         {mode === "video" ? (
           <video
@@ -124,45 +115,81 @@ export default function OtonuTaniFinal() {
             src={`/tanitim${vIndex}.mp4`}
             autoPlay
             playsInline
-            onEnded={handleVideoEnd}
+            onEnded={() => vIndex < TOPLAM_VIDEO ? setVIndex(vIndex + 1) : (setMode("resim"), setVIndex(1))}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            onError={handleVideoEnd}
           />
         ) : (
           <div style={{ width: '100%', height: '100%', position: 'relative' }}>
             <img
               key={`r-${rIndex}`}
               src={`/images/slayt1 (${rIndex}).jpg`}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', animation: 'kenburns 20s infinite' }}
               alt="Ekspertiz"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                if (target.src.endsWith(".jpg")) target.src = target.src.replace(".jpg", ".jpeg");
-              }}
             />
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, #000 0%, transparent 40%)' }} />
-            <div style={{ position: 'absolute', bottom: '150px', left: '5%', zIndex: 10 }}>
-              <h2 style={{ fontSize: '5vw', color: '#FFD60A', fontWeight: '900', textShadow: '0 0 20px #000' }}>
-                {MESAJLAR[rIndex % MESAJLAR.length]}
-              </h2>
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 50%)' }} />
+            
+            {/* RESİM ÜZERİNDEKİ MESAJ KUTUSU */}
+            <div style={{ position: 'absolute', bottom: '180px', left: '50px', right: '50px', zIndex: 20 }}>
+               <div style={{ background: 'rgba(255, 214, 10, 0.9)', color: '#000', padding: '20px 40px', borderRadius: '0 50px 50px 0', display: 'inline-block', boxShadow: '10px 10px 30px rgba(0,0,0,0.5)' }}>
+                  <h2 style={{ fontSize: '3.5vw', fontWeight: '900', margin: 0, textTransform: 'uppercase' }}>
+                    {MESAJLAR[rIndex % MESAJLAR.length]}
+                  </h2>
+               </div>
             </div>
           </div>
         )}
       </div>
 
-      <div style={{ position: 'absolute', top: '30px', right: '30px', zIndex: 50 }}>
-        <div style={{ background: 'rgba(0,0,0,0.8)', padding: '15px 30px', borderRadius: '15px', border: '2px solid #FFD60A', display: 'flex', alignItems: 'center', gap: '20px' }}>
-            <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '3vw', fontWeight: '900', color: '#FFD60A', lineHeight: 1 }}>SERKAN ALTAY</div>
-            </div>
-            <Zap color="#FFD60A" size={40} fill="#FFD60A" />
+      {/* ÜST TABELA */}
+      <div style={{ position: 'absolute', top: '30px', left: '30px', zIndex: 100, display: 'flex', gap: '15px' }}>
+         <div style={{ background: '#FFD60A', color: '#000', padding: '15px 30px', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '15px', border: '3px solid #fff', boxShadow: '0 0 20px rgba(255,214,10,0.4)' }}>
+            <Car size={40} />
+            <div style={{ fontWeight: '900', fontSize: '2vw' }}>OTONU TANI</div>
+         </div>
+         <div style={{ background: 'rgba(0,0,0,0.7)', padding: '15px 30px', borderRadius: '10px', border: '2px solid #FFD60A', backdropFilter: 'blur(10px)' }}>
+            <div style={{ color: '#FFD60A', fontSize: '1.8vw', fontWeight: 'bold' }}>SERKAN ALTAY</div>
+         </div>
+      </div>
+
+      {/* KAYAN YAZI BANDI (TICKER) */}
+      <div style={{ position: 'absolute', bottom: '100px', width: '100%', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(5px)', height: '50px', overflow: 'hidden', display: 'flex', alignItems: 'center', borderTop: '1px solid rgba(255,214,10,0.3)', zIndex: 90 }}>
+         <div className="ticker-content" style={{ display: 'flex', whiteSpace: 'nowrap', gap: '50px', animation: 'ticker 40s linear infinite', color: '#FFD60A', fontSize: '1.2vw', fontWeight: 'bold' }}>
+            {HIZMETLER.map((h, i) => (
+              <span key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <CheckCircle2 size={20} /> {h.toUpperCase()}
+              </span>
+            ))}
+            {/* Döngü için aynısından bir tane daha */}
+            {HIZMETLER.map((h, i) => (
+              <span key={`dup-${i}`} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <CheckCircle2 size={20} /> {h.toUpperCase()}
+              </span>
+            ))}
+         </div>
+      </div>
+
+      {/* EN ALT NUMARA BANDI */}
+      <div style={{ position: 'absolute', bottom: 0, width: '100%', height: '100px', background: '#FFD60A', color: '#000', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 50px', zIndex: 100, borderTop: '5px solid #fff' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <ShieldCheck size={50} />
+          <div style={{ fontSize: '2vw', fontWeight: '900' }}>KALİTELİ • GÜVENİLİR • TARAFSIZ</div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <Phone size={40} fill="black" />
+          <div style={{ fontSize: '5vw', fontWeight: '1000' }}>{SERKAN_NO}</div>
         </div>
       </div>
 
-      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '100px', background: '#FFD60A', color: '#000', zIndex: 50, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '30px', borderTop: '4px solid #fff' }}>
-        <Phone size={40} fill="black" />
-        <div style={{ fontSize: '6vw', fontWeight: '1000' }}>{SERKAN_NO}</div>
-      </div>
+      <style jsx global>{`
+        @keyframes ticker {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes kenburns {
+          0% { transform: scale(1); }
+          100% { transform: scale(1.2) translate(10px, -10px); }
+        }
+      `}</style>
     </div>
   );
 }
