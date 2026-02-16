@@ -31,7 +31,7 @@ const MESAJLAR = [
   "Serkan Altay güvencesiyle, aracınızın kimliğini dijital sistemlerle eksiksiz raporluyoruz."
 ];
 
-export default function KurumsalOtonuTaniFinal() {
+export default function OtonuTaniJpgFinal() {
   const [mode, setMode] = useState<"video" | "resim">("video");
   const [vIndex, setVIndex] = useState(1);
   const [rIndex, setRIndex] = useState(1);
@@ -102,11 +102,11 @@ export default function KurumsalOtonuTaniFinal() {
       {!isStarted && (
         <div onClick={handleStart} style={{ position: 'absolute', inset: 0, zIndex: 1000, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', background: '#000', cursor: 'pointer' }}>
           <PlayCircle size={100} color="#FFD60A" />
-          <h1 style={{ color: '#FFD60A', marginTop: '20px', letterSpacing: '2px' }}>OTONU TANI YAYININI BAŞLAT</h1>
+          <h1 style={{ color: '#FFD60A', marginTop: '20px', letterSpacing: '2px', textAlign: 'center' }}>OTONU TANI YAYININI BAŞLAT</h1>
         </div>
       )}
 
-      {/* ANA EKRAN (VİDEO VE RESİM) */}
+      {/* ANA EKRAN */}
       <div style={{ position: 'absolute', inset: 0 }}>
         {mode === "video" ? (
           <video
@@ -126,17 +126,11 @@ export default function KurumsalOtonuTaniFinal() {
               src={`/images/slayt1 (${rIndex}).jpg`}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               alt="Ekspertiz"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                if (!target.src.includes('.jpeg')) {
-                    target.src = `/images/slayt1 (${rIndex}).jpeg`;
-                }
-              }}
             />
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 50%)' }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 50%)' }} />
             
             <div style={{ position: 'absolute', bottom: '180px', left: '50px', right: '50px', zIndex: 20 }}>
-               <div style={{ background: 'rgba(255, 214, 10, 0.9)', color: '#000', padding: '20px 40px', borderRadius: '0 50px 50px 0', display: 'inline-block', boxShadow: '10px 10px 30px rgba(0,0,0,0.5)' }}>
+               <div style={{ background: 'rgba(255, 214, 10, 0.95)', color: '#000', padding: '20px 40px', borderRadius: '0 50px 50px 0', display: 'inline-block', boxShadow: '10px 10px 30px rgba(0,0,0,0.5)' }}>
                   <h2 style={{ fontSize: '3.5vw', fontWeight: '900', margin: 0, textTransform: 'uppercase' }}>
                     {MESAJLAR[rIndex % MESAJLAR.length]}
                   </h2>
@@ -158,10 +152,11 @@ export default function KurumsalOtonuTaniFinal() {
       </div>
 
       {/* KAYAN YAZI BANDI */}
-      <div style={{ position: 'absolute', bottom: '100px', width: '100%', background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(5px)', height: '50px', overflow: 'hidden', display: 'flex', alignItems: 'center', borderTop: '2px solid #FFD60A', zIndex: 90 }}>
-         <marquee scrollamount="10" style={{ color: '#FFD60A', fontSize: '1.5vw', fontWeight: 'bold' }}>
+      <div style={{ position: 'absolute', bottom: '100px', width: '100%', background: 'rgba(0,0,0,0.9)', backdropFilter: 'blur(5px)', height: '55px', overflow: 'hidden', display: 'flex', alignItems: 'center', borderTop: '2px solid #FFD60A', zIndex: 90 }}>
+         {/* eslint-disable-next-line react/no-unknown-property */}
+         <marquee scrollamount="12" style={{ color: '#FFD60A', fontSize: '1.8vw', fontWeight: 'bold' }}>
             {HIZMETLER.map((h, i) => (
-              <span key={i} style={{ marginRight: '50px' }}>
+              <span key={i} style={{ marginRight: '60px' }}>
                 • {h.toUpperCase()}
               </span>
             ))}
